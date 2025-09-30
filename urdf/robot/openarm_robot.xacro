@@ -27,14 +27,20 @@
             arm_connected_to='base'
             body_connected_to='world'
             bimanual:=false
-            right_arm_base_xyz='0 0 0'
-            left_arm_base_xyz='0 0 0'
-            right_arm_base_rpy='0 0 0'
-            left_arm_base_rpy='0 0 0'
+            right_arm_base_xyz:='0 0 0'
+            left_arm_base_xyz:='0 0 0'
+            right_arm_base_rpy:='0 0 0'
+            left_arm_base_rpy:='0 0 0'
             left_can_interface:='can1'
             right_can_interface:='can0'
             left_arm_prefix:='left_'
             right_arm_prefix:='right_'
+            left_wrist_camera:='false'
+            right_wrist_camera:='false'
+            left_wrist_cam_xyz:='0 0 0'
+            left_wrist_cam_rpy:='0 0 0'
+            right_wrist_cam_xyz:='0 0 0'
+            right_wrist_cam_rpy:='0 0 0'
             can_fd:='true'
             "
             >
@@ -47,8 +53,13 @@
     <xacro:include filename="$(find openarm_description)/urdf/ee/openarm_hand_macro.xacro" />
     <xacro:include filename="$(find openarm_description)/urdf/ros2_control/openarm.ros2_control.xacro" />
     <xacro:include filename="$(find openarm_description)/urdf/ros2_control/openarm.bimanual.ros2_control.xacro" />
+
     <xacro:if value="${ee_type != 'none'}">
         <xacro:include filename="$(find openarm_description)/urdf/ee/${ee_type}_arguments.xacro" />
+    </xacro:if>
+
+    <xacro:if value="${left_wrist_camera or right_wrist_camera}">
+        <xacro:include filename="$(find realsense2_description)/urdf/_d405.urdf.xacro"/>
     </xacro:if>
 
     <xacro:property name="arm_prefix_modified" value="${'' if arm_prefix == '' else arm_prefix + '_'}" />
@@ -83,6 +94,18 @@
         kinematics_link="${kinematics_link}"
         kinematics_offset="${kinematics_offset}" />
 
+        <xacro:if value="${left_wrist_camera}">
+            <link name="openarm_left_camera_mount"/>
+            <joint name="openarm_left_camera_mount_joint" type="fixed">
+              <parent link="openarm_left_link7"/>
+              <child link="openarm_left_camera_mount"/>
+              <origin xyz="${left_wrist_cam_xyz}" rpy="${left_wrist_cam_rpy}"/>
+            </joint>
+            <xacro:sensor_d405 parent="openarm_left_camera_mount" name="left_realsense" use_nominal_extrinsics="true">
+              <origin xyz="0 0 0" rpy="0 0 0"/>
+            </xacro:sensor_d405>
+        </xacro:if>
+
         <!-- right arm -->
         <xacro:openarm_arm
         arm_type="${arm_type}"
@@ -97,6 +120,18 @@
         kinematics="${kinematics}"
         kinematics_link="${kinematics_link}"
         kinematics_offset="${kinematics_offset}" />
+
+        <xacro:if value="${right_wrist_camera}">
+            <link name="openarm_right_camera_mount"/>
+            <joint name="openarm_right_camera_mount_joint" type="fixed">
+              <parent link="openarm_right_link7"/>
+              <child link="openarm_right_camera_mount"/>
+              <origin xyz="${right_wrist_cam_xyz}" rpy="${right_wrist_cam_rpy}"/>
+            </joint>
+            <xacro:sensor_d405 parent="openarm_right_camera_mount" name="right_realsense" use_nominal_extrinsics="true">
+              <origin xyz="0.1 0 0" rpy="0 0 0"/>
+            </xacro:sensor_d405>
+        </xacro:if>
 
         <!-- ros2_control hardware interfaces for bimanual setup -->
         <xacro:if value="${ros2_control}">

@@ -6,7 +6,7 @@ hand:
     roll: 0
     pitch: 0
     yaw: 0
-  mass: 0.35
+  mass: 0.30
   inertia:
     xx: 0.0002473
     yy: 1.763e-05
@@ -66,5 +66,3 @@ right_finger:
 #     xz: 0
 #     yz: 0
 # right_finger: *finger
-
-
