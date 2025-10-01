@@ -41,6 +41,9 @@
             left_wrist_cam_rpy:='0 0 0'
             right_wrist_cam_xyz:='0 0 0'
             right_wrist_cam_rpy:='0 0 0'
+            body_camera='false'
+            body_cam_xyz='0 0 0'
+            body_cam_rpy='0 0 0'
             can_fd:='true'
             "
             >
@@ -60,6 +63,11 @@
 
     <xacro:if value="${left_wrist_camera or right_wrist_camera}">
         <xacro:include filename="$(find realsense2_description)/urdf/_d405.urdf.xacro"/>
+    </xacro:if>
+
+
+    <xacro:if value="${body_camera}">
+        <xacro:include filename="$(find realsense2_description)/urdf/_d435.urdf.xacro"/>
     </xacro:if>
 
     <xacro:property name="arm_prefix_modified" value="${'' if arm_prefix == '' else arm_prefix + '_'}" />
@@ -94,15 +102,27 @@
         kinematics_link="${kinematics_link}"
         kinematics_offset="${kinematics_offset}" />
 
+        <xacro:if value="${body_camera}">
+            <link name="openarm_body_camera_mount"/>
+            <joint name="openarm_body_camera_mount_joint" type="fixed">
+              <parent link="openarm_body_link0"/>
+              <child link="openarm_body_camera_mount"/>
+              <origin xyz="0 0 0" rpy="0 0 0"/>
+            </joint>
+            <xacro:sensor_d435 parent="openarm_body_camera_mount" name="body_realsense" use_nominal_extrinsics="true">
+              <origin xyz="${body_cam_xyz}" rpy="${body_cam_rpy}"/>
+            </xacro:sensor_d435>
+        </xacro:if>
+
         <xacro:if value="${left_wrist_camera}">
             <link name="openarm_left_camera_mount"/>
             <joint name="openarm_left_camera_mount_joint" type="fixed">
               <parent link="openarm_left_link7"/>
               <child link="openarm_left_camera_mount"/>
-              <origin xyz="${left_wrist_cam_xyz}" rpy="${left_wrist_cam_rpy}"/>
+              <origin xyz="0 0 0" rpy="0 0 0"/>
             </joint>
             <xacro:sensor_d405 parent="openarm_left_camera_mount" name="left_realsense" use_nominal_extrinsics="true">
-              <origin xyz="0 0 0" rpy="0 0 0"/>
+              <origin xyz="${left_wrist_cam_xyz}" rpy="${left_wrist_cam_rpy}"/>
             </xacro:sensor_d405>
         </xacro:if>
 
@@ -126,10 +146,10 @@
             <joint name="openarm_right_camera_mount_joint" type="fixed">
               <parent link="openarm_right_link7"/>
               <child link="openarm_right_camera_mount"/>
-              <origin xyz="${right_wrist_cam_xyz}" rpy="${right_wrist_cam_rpy}"/>
+              <origin xyz="0 0 0" rpy="0 0 0"/>
             </joint>
             <xacro:sensor_d405 parent="openarm_right_camera_mount" name="right_realsense" use_nominal_extrinsics="true">
-              <origin xyz="0.1 0 0" rpy="0 0 0"/>
+              <origin xyz="${right_wrist_cam_xyz}" rpy="${right_wrist_cam_rpy}"/>
             </xacro:sensor_d405>
         </xacro:if>
 

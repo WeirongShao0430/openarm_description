@@ -50,11 +50,16 @@
   <xacro:arg name="left_wrist_camera" default="true"/>
   <xacro:arg name="right_wrist_camera" default="true"/>
 
-  <xacro:arg name="left_wrist_cam_xyz" default="0 0 0"/>
+  <xacro:arg name="left_wrist_cam_xyz" default="0.1 0 0"/>
   <xacro:arg name="left_wrist_cam_rpy" default="0 0 0"/>
 
-  <xacro:arg name="right_wrist_cam_xyz" default="0 0 0"/>
+  <xacro:arg name="right_wrist_cam_xyz" default="0.1 0 0"/>
   <xacro:arg name="right_wrist_cam_rpy" default="0 0 0"/>
+
+  <xacro:arg name="body_camera" default="true"/>
+
+  <xacro:arg name="body_cam_xyz" default="0.05 0 0.63"/>
+  <xacro:arg name="body_cam_rpy" default="0 ${pi / 6.0} 0"/>
 
   <xacro:arg name="can_fd" default="true" />
 
@@ -96,6 +101,10 @@
   right_wrist_cam_xyz="$(arg right_wrist_cam_xyz)"
   left_wrist_cam_rpy="$(arg left_wrist_cam_rpy)"
   right_wrist_cam_rpy="$(arg right_wrist_cam_rpy)"
+
+  body_camera="$(arg body_camera)"
+  body_cam_xyz="$(arg body_cam_xyz)"
+  body_cam_rpy="$(arg body_cam_rpy)"
   can_fd="$(arg can_fd)"
   />
 
