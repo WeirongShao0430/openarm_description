@@ -24,10 +24,23 @@ from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
 
 
-def robot_state_publisher_spawner(context: LaunchContext, arm_type, ee_type, bimanual):
+def robot_state_publisher_spawner(
+    context: LaunchContext,
+    arm_type,
+    ee_type,
+    bimanual,
+    chest_camera,
+    chest_cam_xyz,
+    chest_cam_rpy,
+    chest_camera_parent,
+):
     arm_type_str = context.perform_substitution(arm_type)
     ee_type_str = context.perform_substitution(ee_type)
     bimanual_str = context.perform_substitution(bimanual)
+    chest_camera_str = context.perform_substitution(chest_camera)
+    chest_cam_xyz_str = context.perform_substitution(chest_cam_xyz)
+    chest_cam_rpy_str = context.perform_substitution(chest_cam_rpy)
+    chest_camera_parent_str = context.perform_substitution(chest_camera_parent)
 
     xacro_path = os.path.join(
         get_package_share_directory("openarm_description"),
@@ -40,6 +53,10 @@ def robot_state_publisher_spawner(context: LaunchContext, arm_type, ee_type, bim
             "arm_type": arm_type_str,
             "ee_type": ee_type_str,
             "bimanual": bimanual_str,
+            "chest_camera": chest_camera_str,
+            "chest_cam_xyz": chest_cam_xyz_str,
+            "chest_cam_rpy": chest_cam_rpy_str,
+            "chest_camera_parent": chest_camera_parent_str,
         }
     ).toprettyxml(indent="  ")
 
@@ -92,13 +109,46 @@ def generate_launch_description():
         description="Whether to use bimanual configuration"
     )
 
+    chest_camera_arg = DeclareLaunchArgument(
+        "chest_camera",
+        default_value="false",
+        description="Enable chest-mounted camera"
+    )
+    chest_cam_xyz_arg = DeclareLaunchArgument(
+        "chest_cam_xyz",
+        default_value="0.055 0.045 0.68",
+        description="XYZ offset of the chest camera relative to its parent"
+    )
+    chest_cam_rpy_arg = DeclareLaunchArgument(
+        "chest_cam_rpy",
+        default_value="-2.40 0.03 -1.605",
+        description="RPY orientation of the chest camera relative to its parent"
+    )
+    chest_camera_parent_arg = DeclareLaunchArgument(
+        "chest_camera_parent",
+        default_value="openarm_link0",
+        description="Link that the chest camera mount is attached to"
+    )
+
     arm_type = LaunchConfiguration("arm_type")
     ee_type = LaunchConfiguration("ee_type")
     bimanual = LaunchConfiguration("bimanual")
+    chest_camera = LaunchConfiguration("chest_camera")
+    chest_cam_xyz = LaunchConfiguration("chest_cam_xyz")
+    chest_cam_rpy = LaunchConfiguration("chest_cam_rpy")
+    chest_camera_parent = LaunchConfiguration("chest_camera_parent")
 
     robot_state_publisher_loader = OpaqueFunction(
         function=robot_state_publisher_spawner,
-        args=[arm_type, ee_type, bimanual]
+        args=[
+            arm_type,
+            ee_type,
+            bimanual,
+            chest_camera,
+            chest_cam_xyz,
+            chest_cam_rpy,
+            chest_camera_parent,
+        ]
     )
 
     rviz_loader = OpaqueFunction(
@@ -110,6 +160,10 @@ def generate_launch_description():
         arm_type_arg,
         ee_type_arg,
         bimanual_arg,
+        chest_camera_arg,
+        chest_cam_xyz_arg,
+        chest_cam_rpy_arg,
+        chest_camera_parent_arg,
         robot_state_publisher_loader,
         Node(
             package="joint_state_publisher_gui",
