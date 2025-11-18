@@ -44,6 +44,10 @@
             body_camera='false'
             body_cam_xyz='0 0 0'
             body_cam_rpy='0 0 0'
+            chest_camera:='false'
+            chest_cam_xyz:='0.055 0.045 0.68'
+            chest_cam_rpy:='-2.40 0.03 -1.605'
+            chest_camera_parent:='openarm_link0'
             can_fd:='true'
             "
             >
@@ -66,7 +70,7 @@
     </xacro:if>
 
 
-    <xacro:if value="${body_camera}">
+    <xacro:if value="${body_camera or chest_camera}">
         <xacro:include filename="$(find realsense2_description)/urdf/_d435.urdf.xacro"/>
     </xacro:if>
 
@@ -247,6 +251,18 @@
         </xacro:if>
 
         </xacro:if>
+
+    <xacro:if value="${chest_camera}">
+        <link name="openarm_chest_camera_mount"/>
+        <joint name="openarm_chest_camera_mount_joint" type="fixed">
+          <parent link="${chest_camera_parent}"/>
+          <child link="openarm_chest_camera_mount"/>
+          <origin xyz="0 0 0" rpy="0 0 0"/>
+        </joint>
+        <xacro:sensor_d435 parent="openarm_chest_camera_mount" name="chest_camera" use_nominal_extrinsics="true">
+          <origin xyz="${chest_cam_xyz}" rpy="${chest_cam_rpy}"/>
+        </xacro:sensor_d435>
+    </xacro:if>
 
   </xacro:macro>
 </robot>

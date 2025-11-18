@@ -61,6 +61,11 @@
   <xacro:arg name="body_cam_xyz" default="0.05 0 0.63"/>
   <xacro:arg name="body_cam_rpy" default="0 ${pi / 6.0} 0"/>
 
+  <xacro:arg name="chest_camera" default="false"/>
+  <xacro:arg name="chest_cam_xyz" default="0.055 0.045 0.68"/>
+  <xacro:arg name="chest_cam_rpy" default="-2.40 0.03 -1.605"/>
+  <xacro:arg name="chest_camera_parent" default="openarm_link0"/>
+
   <xacro:arg name="can_fd" default="true" />
 
   <xacro:openarm_robot
@@ -105,6 +110,10 @@
   body_camera="$(arg body_camera)"
   body_cam_xyz="$(arg body_cam_xyz)"
   body_cam_rpy="$(arg body_cam_rpy)"
+  chest_camera="$(arg chest_camera)"
+  chest_cam_xyz="$(arg chest_cam_xyz)"
+  chest_cam_rpy="$(arg chest_cam_rpy)"
+  chest_camera_parent="$(arg chest_camera_parent)"
   can_fd="$(arg can_fd)"
   />
 
